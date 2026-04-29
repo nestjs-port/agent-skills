@@ -98,6 +98,10 @@ Use explicit file exports and avoid widening public API unintentionally.
 5. Replace `Assert.notNull(...)` with `assert(...)` from `node:assert/strict`.
 6. Replace Java copy constructors (`new HashMap<>(x)`, `new ArrayList<>(x)`) with spread copies.
 7. Convert Java interfaces with `static` or `default` methods into TypeScript `abstract class`; keep plain interfaces as `interface`.
+8. When migrating logger calls that use `{}` placeholders, rewrite them to template literals in TypeScript instead of preserving placeholder arguments.
+   - Translate the Java arguments into TypeScript expressions first, then interpolate them with template literals.
+   - Example: `logger.debug("Adding {} messages to conversation: {}", messages.size(), conversationId)` becomes `logger.debug(\`Adding ${messages.length} messages to conversation: ${conversationId}\`)`.
+   - Keep non-formatting logger arguments only when the target logger API requires them, such as an `Error` object passed separately.
 
 ## Import/Export Patterns
 
@@ -135,9 +139,11 @@ import type { Message } from "./message.interface";
 
 ## Comments Handling
 
-Do not migrate Javadoc.
+Migrate Java comments into TypeScript JSDoc when they exist.
+Do not copy `@author` or `@since` tags.
 Add the standard Apache license header used by `nestjs-ai` to every migrated TypeScript source and test file.
-Preserve meaningful inline implementation comments inside method/function bodies.
+Preserve meaningful inline implementation comments inside method/function bodies at the same relative location.
+Do not introduce comments that do not exist in the Java source being migrated.
 For test files, comments inside Java test methods MUST be copied verbatim into the corresponding TypeScript test body.
 Do not paraphrase, summarize, or omit Java method-body comments.
 
@@ -157,9 +163,11 @@ Migration Checklist:
 - [ ] Apply getter/field/constructor conversion rules
 - [ ] Keep imports and barrel exports consistent
 - [ ] `index.ts` uses `export *` only for directories; same-directory files use explicit exports
-- [ ] Omit Javadoc
+- [ ] Convert Java comments to JSDoc where present and relevant
+- [ ] Skip `@author` and `@since`
 - [ ] Add the `nestjs-ai` Apache license header to every migrated TypeScript source and test file
-- [ ] Preserve meaningful inline implementation comments
+- [ ] Preserve meaningful inline implementation comments at the same relative location
+- [ ] Do not add comments that do not exist in the Java source
 - [ ] For tests, keep case names/structure aligned with source JUnit tests
 - [ ] Test-method inline comments copied verbatim and kept in matching locations
 - [ ] No Java method-body comment was paraphrased or omitted

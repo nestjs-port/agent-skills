@@ -1,15 +1,16 @@
-# Documentation Migration (Javadoc -> TypeScript Comments)
+# Documentation Migration (Java Comments -> TypeScript JSDoc)
 
 ## Core Rule
 
 Migrate only comments that are useful for implementation clarity in the target TS file.
 
 Required behavior:
-- Translate useful Java Javadocs into TypeScript JSDoc when the repository style calls for it.
+- Translate Java comments into TypeScript JSDoc when they exist.
 - Copy the Java copyright line into the TypeScript file when present.
 - Do not copy `@since` or `@author` tags into the TypeScript output.
 - Do not copy the rest of the Java license header verbatim; use the standard `nestjs-ai` Apache header in migrated TypeScript files.
-- Preserve inline comments inside method/function bodies when they explain logic.
+- Preserve inline comments inside method/function bodies at the same relative location.
+- Do not introduce comments that do not exist in the Java source being migrated.
 - For test files, copy Java test-method inline comments verbatim into the matching Vitest test body.
 
 ## What to Drop
@@ -45,7 +46,7 @@ package org.springframework.batch.core;
 export class ExitStatus {
 ```
 
-### 2) Class-Level Javadoc
+### 2) Class-Level Comment
 
 **Java (drop):**
 ```java
@@ -63,7 +64,7 @@ public class ExitStatus {
 export class ExitStatus {
 ```
 
-### 3) Method-Level Javadoc
+### 3) Method-Level Comment
 
 **Java (drop):**
 ```java
@@ -114,7 +115,7 @@ Do not paraphrase or shorten them unless the surrounding code forces a structura
 
 ## Practical Guidance
 
-- Prefer consistency with sibling files over literal Javadoc translation.
-- If nearby files use TS JSDoc for public APIs, convert the useful Javadoc into JSDoc rather than dropping it.
+- Prefer consistency with sibling files over literal comment translation.
+- Convert Java class, method, field, enum, and test comments into TypeScript JSDoc unless they are `@author` or `@since`.
 - If nearby files already keep extensive TypeDoc, follow local style.
-- If a comment explains non-obvious behavior, keep it even when the surrounding Javadoc is dropped.
+- If a comment explains non-obvious behavior, keep it in the same relative location when possible.

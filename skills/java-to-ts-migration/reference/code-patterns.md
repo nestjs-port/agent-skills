@@ -386,3 +386,26 @@ export namespace ToolDefinition {
 ```
 
 **Prefer:** Convert to abstract class (see Section 6a) instead of using namespace pattern.
+
+## 8. Logger Placeholder Conversion
+
+**Rule:** When Java code uses logger formatting placeholders like `{}`, convert the message to a TypeScript template literal and interpolate the arguments directly.
+Use real Spring AI logging patterns as the source of truth for this rewrite.
+The examples below are taken from `RedisChatMemoryRepository` and `DefaultMcpToolNamePrefixGenerator`.
+
+**Java:**
+```java
+logger.debug("Adding {} messages to conversation: {}", messages.size(), conversationId);
+logger.warn("Tool name '{}' already exists. Using unique tool name '{}'", tool.name(), uniqueToolName);
+```
+
+**TypeScript:**
+```typescript
+logger.debug(`Adding ${messages.size()} messages to conversation: ${conversationId}`);
+logger.warn(`Tool name '${tool.name()}' already exists. Using unique tool name '${uniqueToolName}'`);
+```
+
+**Key differences:**
+- Do not preserve Java-style placeholder arguments in TypeScript logger calls.
+- Use template literals for Node.js logger APIs when the intent is string interpolation.
+- Keep the original argument order when mapping placeholders to `${...}` expressions.
